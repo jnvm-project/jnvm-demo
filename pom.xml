@@ -10,13 +10,26 @@
 
   <properties>
     <version.jdk>1.8</version.jdk>
+    <version.slf4j>1.7.21</version.slf4j>
+    <version.spark>2.9.3</version.spark>
     <version.junit>4.10</version.junit>
     <version.maven.compiler>3.6.1</version.maven.compiler>
+    <version.maven.exec>3.0.0</version.maven.exec>
     <version.maven.surefire>3.0.0-M6</version.maven.surefire>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${version.slf4j}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sparkjava</groupId>
+      <artifactId>spark-core</artifactId>
+      <version>${version.spark}</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -34,6 +47,14 @@
         <configuration>
           <source>${version.jdk}</source>
           <target>${version.jdk}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${version.maven.exec}</version>
+        <configuration>
+          <mainClass>eu.telecomsudparis.jnvm.demo.Server</mainClass>
         </configuration>
       </plugin>
       <plugin>
