@@ -1,20 +1,22 @@
 package eu.telecomsudparis.jnvm.demo;
 
-import java.util.concurrent.ConcurrentHashMap;
+import eu.telecomsudparis.jnvm.offheap.OffHeap;
+import eu.telecomsudparis.jnvm.offheap.OffHeapString;
+import eu.telecomsudparis.jnvm.util.persistent.RecoverableStrongHashMap;
+
 import java.util.Map;
 
 public class Bank {
 
-    private Map<String, Account> accounts;
+    private Map<OffHeapString, Account> accounts;
 
     public Bank() {
-        this.accounts = new ConcurrentHashMap<>(10000000);
     }
 
     public void createAccount(String id, long initialDeposit) {
         checkAccountNotExists(id);
 
-        accounts.put(id, new Account(Integer.parseInt(id), initialDeposit));
+        accounts.put(new OffHeapString(id), new Account(Integer.parseInt(id), initialDeposit));
     }
 
     public void createAccount(String id) {
@@ -71,6 +73,8 @@ public class Bank {
     }
 
     public void open() {
+        OffHeap.finishInit();
+        this.accounts = RecoverableStrongHashMap.recover("bank", 10000000);
     }
 
     public void close() {
