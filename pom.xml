@@ -10,6 +10,8 @@
 
   <properties>
     <version.jdk>1.8</version.jdk>
+    <version.jnvm>1.0-SNAPSHOT</version.jnvm>
+    <version.bytebuddy>1.12.10</version.bytebuddy>
     <version.slf4j>1.7.21</version.slf4j>
     <version.spark>2.9.3</version.spark>
     <version.junit>4.10</version.junit>
@@ -19,6 +21,11 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>eu.telecomsudparis.jnvm</groupId>
+      <artifactId>jnvm-transformer</artifactId>
+      <version>${version.jnvm}</version>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
@@ -54,6 +61,42 @@
         <version>${version.maven.exec}</version>
         <configuration>
           <mainClass>eu.telecomsudparis.jnvm.demo.Server</mainClass>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy-maven-plugin</artifactId>
+        <version>${version.bytebuddy}</version>
+        <!-- Exclude the dependency on byte-buddy that the maven plugin has -->
+        <!--   https://github.com/raphw/byte-buddy/issues/1263 -->
+        <dependencies>
+          <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-dep</artifactId>
+            <version>${version.bytebuddy}</version>
+            <exclusions>
+              <exclusion>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+        <!-- JNVMTransformerPlugin can not run with shaded ASM in byte-buddy -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>transform-runtime</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <transformations>
+            <transformation>
+              <artifactId>jnvm-transformer</artifactId>
+              <plugin>eu.telecomsudparis.jnvm.transformer.JNVMTransformerPlugin</plugin>
+            </transformation>
+          </transformations>
         </configuration>
       </plugin>
     </plugins>
