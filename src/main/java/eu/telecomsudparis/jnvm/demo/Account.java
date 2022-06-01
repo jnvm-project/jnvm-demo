@@ -1,49 +1,36 @@
 package eu.telecomsudparis.jnvm.demo;
 
-import eu.telecomsudparis.jnvm.offheap.OffHeap;
-import eu.telecomsudparis.jnvm.offheap.OffHeapObjectHandle;
+import eu.telecomsudparis.jnvm.transformer.annotations.Persistent;
 
-public class Account extends OffHeapObjectHandle {
-
-    private static final long CLASS_ID = OffHeap.Klass.registerUserKlass(Account.class);
-    private static final long[] offsets = {0L, 4L};
-    private static final long SIZE = Integer.SIZE + Long.SIZE;
+@Persistent(fa="non-private")
+public class Account {
+    private final int id;
+    private long balance;
 
     Account(int id, long balance) {
-        super();
-        setIntegerField(offsets[0], id);
-        setLongField(offsets[1], balance);
+        this.id = id;
+        this.balance = balance;
     }
-
-    public Account(Void v, long offset) {
-        super(v, offset);
-    }
-
-    public long size() { return SIZE; }
-    public long classId() { return CLASS_ID; }
-    public void descend() { }
 
     protected int getId() {
-        return getIntegerField(offsets[0]);
+        return this.id;
     }
 
     protected long getBalance() {
-        return getLongField(offsets[1]);
+        return this.balance;
     }
 
     protected void setBalance(long balance) {
-        setLongField(offsets[1], balance);
+        this.balance = balance;
     }
 
     protected void incBalance(long delta) {
-        setLongField(offsets[1], getLongField(offsets[1])+delta);
+        this.balance += delta;
     }
 
     public void transferTo(Account dest, long amount) {
-        OffHeap.startRecording();
-        this.incBalance(-amount);
-        dest.incBalance(+amount);
-        OffHeap.stopRecording();
+        this.balance -= amount;
+        dest.balance += amount;
     }
 
 }
