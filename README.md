@@ -15,6 +15,8 @@ Simple banking application.
 
 # Demo flow
 
+[![asciicast](https://asciinema.org/a/499292.svg)](https://asciinema.org/a/499292)
+
 ## Volatile scenario
 
 ### 1. Executing transactions in a fault-free environment
