@@ -15,10 +15,15 @@
     <version.slf4j>1.7.21</version.slf4j>
     <version.spark>2.9.3</version.spark>
     <version.junit>4.10</version.junit>
+    <version.maven.antrun>3.0.0</version.maven.antrun>
     <version.maven.compiler>3.6.1</version.maven.compiler>
     <version.maven.exec>3.0.0</version.maven.exec>
     <version.maven.surefire>3.0.0-M6</version.maven.surefire>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <test.jnvm.heap.path>${java.io.tmpdir}/pmemISPN</test.jnvm.heap.path>
+    <test.jnvm.heap.size>104857600</test.jnvm.heap.size>
   </properties>
 
   <dependencies>
@@ -68,6 +73,30 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.maven.surefire}</version>
+        <configuration>
+          <systemPropertyVariables>
+            <jnvm.heap.path>${test.jnvm.heap.path}</jnvm.heap.path>
+            <jnvm.heap.size>${test.jnvm.heap.size}</jnvm.heap.size>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${version.maven.antrun}</version>
+        <executions>
+          <execution>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <delete file="${test.jnvm.heap.path}"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>net.bytebuddy</groupId>
