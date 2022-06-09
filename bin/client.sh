@@ -51,6 +51,27 @@ _total() {
     echo ""
 }
 
+_load() {
+    echo "Loading in $1 accounts"
+    _create 0 $(( $1 - 1 ))
+}
+
+_run() {
+    echo "Performing continuous random transfers..."
+    maxamount=1000000
+    naccount=$1
+    [ $# -gt 1 ] && interval=$2
+    [ ! -z $interval ] && throttlecmd="sleep $interval" || throttlecmd=""
+    while [ 1 -eq 1 ] ; do
+        from=$(( RANDOM % $naccount ))
+        to=$(( RANDOM % $naccount ))
+        amount=$(( RANDOM % $maxamount ))
+        echo -n "Transferring \$$amount from $from to $to ... "
+        $throttlecmd && _transfer $from $to $amount
+        echo ""
+    done
+}
+
 case $1 in
   balance)
     _balance $2
@@ -69,6 +90,12 @@ case $1 in
     ;;
   total)
     _total
+    ;;
+  load)
+    _load $2
+    ;;
+  run)
+    _run $2 $3
     ;;
   *)
     echo "Not a function"
